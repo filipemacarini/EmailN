@@ -1,20 +1,65 @@
 package campaign
 
-import "testing"
+import (
+	"testing"
+	"time"
 
-func TestNewCampaign(t *testing.T) {
-	name := "teste1"
-	content := "teste2"
-	emails := []string{"filipe@e.com", "gustavo@e.com", "alex@e.com"}
+	"github.com/stretchr/testify/assert"
+)
 
-	campaign := NewCampaign(name, content, emails)
-	if campaign.ID != "1" {
-		t.Errorf("Expected 1")
-	} else if campaign.Content != content {
-		t.Errorf("Expected correct content")
-	} else if campaign.Name != name {
-		t.Errorf("Expected correct content")
-	} else if len(campaign.Contacts) != len(emails) {
-		t.Errorf("Expected correct emails")
-	}
+var (
+	name    = "teste1"
+	content = "teste2"
+	emails  = []string{"filipe@e.com", "gustavo@e.com", "alex@e.com"}
+)
+
+func Test_NewCampaign(t *testing.T) {
+	assert := assert.New(t)
+
+	campaign, _ := NewCampaign(name, content, emails)
+
+	assert.Equal(campaign.Name, name)
+	assert.Equal(len(campaign.Contacts), len(emails))
+	assert.Equal(campaign.Content, content)
+}
+
+func Test_NewCampaign_IDIsNotNil(t *testing.T) {
+	assert := assert.New(t)
+
+	campaign, _ := NewCampaign(name, content, emails)
+
+	assert.NotNil(campaign.ID)
+}
+
+func Test_NewCampaign_CreatedMustBeNow(t *testing.T) {
+	assert := assert.New(t)
+	now := time.Now().Add(-time.Minute)
+
+	campaign, _ := NewCampaign(name, content, emails)
+
+	assert.Greater(campaign.CreatedOn, now)
+}
+
+func Test_NewCampaign_NameMustBeValidated(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign("", content, emails)
+
+	assert.Equal("valid name is required", err.Error())
+}
+
+func Test_NewCampaign_ContentMustBeValidated(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign(name, "", emails)
+
+	assert.Equal("valid content is required", err.Error())
+}
+
+func Test_NewCampaign_ContactsMustBeValidated(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign(name, content, []string{})
+
+	assert.Equal("valid emails are required", err.Error())
 }
