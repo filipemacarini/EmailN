@@ -40,7 +40,7 @@ func Test_NewCampaign_CreatedMustBeNow(t *testing.T) {
 	assert.Greater(campaign.CreatedOn, now)
 }
 
-func Test_NewCampaign_NameMustBeValidated(t *testing.T) {
+func Test_NewCampaign_MustValidateName(t *testing.T) {
 	assert := assert.New(t)
 
 	_, err := NewCampaign("", content, emails)
@@ -48,7 +48,7 @@ func Test_NewCampaign_NameMustBeValidated(t *testing.T) {
 	assert.Equal("valid name is required", err.Error())
 }
 
-func Test_NewCampaign_ContentMustBeValidated(t *testing.T) {
+func Test_NewCampaign_MustValidateContent(t *testing.T) {
 	assert := assert.New(t)
 
 	_, err := NewCampaign(name, "", emails)
@@ -56,7 +56,7 @@ func Test_NewCampaign_ContentMustBeValidated(t *testing.T) {
 	assert.Equal("valid content is required", err.Error())
 }
 
-func Test_NewCampaign_ContactsMustBeValidated(t *testing.T) {
+func Test_NewCampaign_MustValidateEmails(t *testing.T) {
 	assert := assert.New(t)
 
 	_, err := NewCampaign(name, content, []string{})
