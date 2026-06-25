@@ -17,7 +17,7 @@ var (
 		Emails:  []string{"teste1@teste.com"},
 	}
 	repository = new(repositoryMock)
-	service    = Service{}
+	service    = ServiceImp{}
 )
 
 type repositoryMock struct {
