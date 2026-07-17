@@ -28,6 +28,14 @@ func (r *repositoryMock) Save(c *Campaign) error {
 	args := r.Called(c)
 	return args.Error(0)
 }
+func (r *repositoryMock) GetBy(id string) (*Campaign, error) {
+	args := r.Called(id)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*Campaign), nil
+}
+
 func (r *repositoryMock) Get() ([]Campaign, error) {
 	return nil, nil
 }
@@ -47,7 +55,8 @@ func Test_Create_SaveCampaign(t *testing.T) {
 	repository.On("Save", mock.MatchedBy(func(campaign *Campaign) bool {
 		if campaign.Name != newCampaign.Name ||
 			campaign.Content != newCampaign.Content ||
-			len(campaign.Contacts) != len(newCampaign.Emails) {
+			len(campaign.Contacts) != len(newCampaign.Emails) ||
+			campaign.Status != Pending {
 			return false
 		}
 		return true
@@ -74,6 +83,35 @@ func Test_Create_ValidateRepositorySave(t *testing.T) {
 	service.Repository = repository
 
 	_, err := service.Create(newCampaign)
+
+	assert.True(errors.Is(internalerrors.ErrInternal, err))
+}
+
+func Test_GetBy_ReturnCampaign(t *testing.T) {
+	assert := assert.New(t)
+	campaign, _ := NewCampaign(newCampaign.Name, newCampaign.Content, newCampaign.Emails)
+	repository = new(repositoryMock)
+	repository.On("GetBy", mock.MatchedBy(func(id string) bool {
+		return id == campaign.ID
+	})).Return(campaign, nil)
+	service.Repository = repository
+
+	campaignReturned, _ := service.GetBy(campaign.ID)
+
+	assert.Equal(campaign.ID, campaignReturned.ID)
+	assert.Equal(campaign.Name, campaignReturned.Name)
+	assert.Equal(campaign.Content, campaignReturned.Content)
+	assert.Equal(campaign.Status, campaignReturned.Status)
+}
+
+func Test_GetBy_ReturnErrorWhenSomethingWrongExist(t *testing.T) {
+	assert := assert.New(t)
+	campaign, _ := NewCampaign(newCampaign.Name, newCampaign.Content, newCampaign.Emails)
+	repository = new(repositoryMock)
+	repository.On("GetBy", mock.Anything).Return(nil, errors.New("something wrong"))
+	service.Repository = repository
+
+	_, err := service.GetBy(campaign.ID)
 
 	assert.True(errors.Is(internalerrors.ErrInternal, err))
 }
