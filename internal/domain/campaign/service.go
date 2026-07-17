@@ -6,7 +6,7 @@ import (
 )
 
 type Service interface {
-	Get() ([]Campaign, error)
+	GetBy(id string) (*contract.CampaignResponse, error)
 	Create(newCampaign contract.NewCampaign) (string, error)
 }
 
@@ -14,8 +14,18 @@ type ServiceImp struct {
 	Repository Repository
 }
 
-func (s *ServiceImp) Get() ([]Campaign, error) {
-	return s.Repository.Get()
+func (s *ServiceImp) GetBy(id string) (*contract.CampaignResponse, error) {
+	campaign, err := s.Repository.GetBy(id)
+	if err != nil {
+		return nil, internalerrors.ErrInternal
+	}
+	campaignResponse := contract.CampaignResponse{
+		ID:      campaign.ID,
+		Name:    campaign.Name,
+		Content: campaign.Content,
+		Status:  campaign.Status,
+	}
+	return &campaignResponse, nil
 }
 
 func (s *ServiceImp) Create(newCampaign contract.NewCampaign) (string, error) {
