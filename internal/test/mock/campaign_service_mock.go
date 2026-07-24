@@ -22,3 +22,11 @@ func (r *CampaignServiceMock) Create(newCampaign contract.NewCampaign) (string, 
 	args := r.Called(newCampaign)
 	return args.String(0), args.Error(1)
 }
+
+func (r *CampaignServiceMock) Cancel(id string) error {
+	return nil
+}
+
+func (r *CampaignServiceMock) Delete(id string) error {
+	return nil
+}
