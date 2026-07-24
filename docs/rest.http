@@ -2,11 +2,19 @@ POST http://localhost:3000/campaigns
 Content-Type: application/json
 
 {
-    "name": "changee",
-    "content": "change password",
-    "emails": ["filipe@gmail.com"]
+    "name": "change password",
+    "content": "change password of accounts",
+    "emails": ["filipe@e.com", "gustavo@e.com", "luiz@e.com"]
 }
 
 ###
 
-GET http://localhost:3000/campaigns
+GET http://localhost:3000/campaigns/d9gilcudsq7gll9bo2ng
+
+###
+
+PATCH http://localhost:3000/campaigns/cancel/d9ghfledsq7q6pmlg48g
+
+###
+
+DELETE http://localhost:3000/campaigns/delete/d9gilcudsq7gll9bo2ng
